@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.TextView;
 
 import com.zhuicyun.dialoglib.R;
@@ -20,8 +21,18 @@ public class TipsAndTitleHaveSureButton extends BaseDialogFragment {
     String hintTitle = "温馨提示", hintContent = "别乱动", hintBtn = "确认";
     int titleColor = Color.BLACK, contentColor = Color.BLUE, btnColor = Color.WHITE;
     int titleBg = Color.CYAN, contentBg = Color.GREEN, btnBg = Color.RED;
-
+    boolean isRemoveTitle;
     TextView title, content, btn;
+    public interface  SureClickListener{
+        void sure();
+    }
+
+    SureClickListener sureClickListener;
+    public void setSureClickListener(SureClickListener sureClickListener){
+        this.sureClickListener=sureClickListener;
+    }
+
+
 
     public TipsAndTitleHaveSureButton(Builder builder) {
         this.hintTitle = builder.hintTitle;
@@ -33,6 +44,7 @@ public class TipsAndTitleHaveSureButton extends BaseDialogFragment {
         this.hintBtn = builder.hintBtn;
         this.btnColor = builder.btnColor;
         this.btnBg = builder.btnBg;
+        this.isRemoveTitle=builder.isRemoveTitle;
 
     }
 
@@ -73,7 +85,13 @@ public class TipsAndTitleHaveSureButton extends BaseDialogFragment {
     public void initView(Dialog dialog) {
         title = dialog.findViewById(R.id.title);
         content = dialog.findViewById(R.id.content);
-        btn=dialog.findViewById(R.id.btn);
+        btn = dialog.findViewById(R.id.btn);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sureClickListener.sure();
+            }
+        });
     }
 
     @Override
@@ -89,12 +107,21 @@ public class TipsAndTitleHaveSureButton extends BaseDialogFragment {
         btn.setText(TextUtils.isEmpty(hintBtn) ? "确认" : hintBtn);
         btn.setTextColor(btnColor == 0 ? Color.WHITE : btnColor);
         btn.setBackgroundColor(btnBg == 0 ? Color.RED : btnBg);
+        if (isRemoveTitle) {
+            title.setVisibility(View.GONE);
+        }
     }
 
     public static class Builder extends BaseBuilder {
         String hintTitle, hintContent, hintBtn;
         int titleColor, contentColor, btnColor;
         int titleBg, contentBg, btnBg;
+        boolean isRemoveTitle;
+
+        public Builder setRemoveTitle(boolean removeTitle) {
+            isRemoveTitle = removeTitle;
+            return this;
+        }
 
         public Builder setHintBtn(String hintBtn) {
             this.hintBtn = hintBtn;
